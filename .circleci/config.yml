@@ -31,7 +31,7 @@ jobs:
           command: yarn npm-cli-login
       - run:
           name: Publish
-          command: npm publish
+          command: npm publish --access=public
 
 workflows:
   version: 2
