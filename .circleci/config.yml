@@ -1,0 +1,40 @@
+version: 2
+
+references:
+  env_config: &env_config
+    docker:
+      - image: 'circleci/node:stretch'
+  npm_cache: &npm_cache v1-npm-deps-{{ checksum "yarn.lock" }}
+
+jobs:
+  build:
+    <<: *env_config
+    steps:
+      - checkout
+      - restore_cache:
+          key: *npm_cache
+      - run:
+          name: Install
+          command: yarn
+      - run:
+          name: Install Additional
+          command: yarn add npm-cli-login@0.1.1
+      - save_cache:
+          key: *npm_cache
+          paths:
+            - ./node_modules
+      - run:
+          name: Build
+          command: yarn build
+      - run:
+          name: Login NPM registory
+          command: yarn npm-cli-login
+      - run:
+          name: Publish
+          command: npm publish
+
+workflows:
+  version: 2
+  build_and_publish:
+    jobs:
+      - build
